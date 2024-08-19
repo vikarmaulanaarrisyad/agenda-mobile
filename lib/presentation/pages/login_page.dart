@@ -17,60 +17,123 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              decoration: const InputDecoration(labelText: 'Email'),
-              controller: emailController,
+      backgroundColor: const Color.fromARGB(255, 99, 15, 227),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Card(
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
             ),
-            TextField(
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
-              controller: passwordController,
-            ),
-            const SizedBox(height: 16),
-            BlocConsumer<LoginBloc, LoginState>(
-              listener: (context, state) {
-                if (state is LoginLoaded) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('Welcome, ${state.response.user.name}!')),
-                  );
-                  // Navigate to another screen or perform other actions
-                } else if (state is LoginError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message)),
-                  );
-                }
-              },
-              builder: (context, state) {
-                if (state is LoginLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                return ElevatedButton(
-                  onPressed: () {
-                    final loginRequest = LoginRequestModel(
-                      email: emailController.text,
-                      password: passwordController.text,
-                    );
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Login',
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      prefixIcon: const Icon(Icons.email),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      prefixIcon: const Icon(Icons.lock),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    controller: passwordController,
+                    textInputAction: TextInputAction.done,
+                  ),
+                  const SizedBox(height: 24),
+                  BlocConsumer<LoginBloc, LoginState>(
+                    listener: (context, state) {
+                      if (state is LoginLoaded) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text('Welcome, ${state.response.user.name}!'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        // Navigate to another screen or perform other actions
+                      } else if (state is LoginError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(state.message),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is LoginLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      return Container(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            final loginRequest = LoginRequestModel(
+                              email: emailController.text,
+                              password: passwordController.text,
+                            );
 
-                    context
-                        .read<LoginBloc>()
-                        .add(ProsesLoginEvent(request: loginRequest));
-                  },
-                  child: const Text('Login'),
-                );
-              },
+                            context
+                                .read<LoginBloc>()
+                                .add(ProsesLoginEvent(request: loginRequest));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.deepPurple, // Text color
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            elevation: 5, // Button shadow
+                            shadowColor: Colors.black.withOpacity(0.3),
+                            textStyle: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          child: const Text(
+                            'Login',
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );
