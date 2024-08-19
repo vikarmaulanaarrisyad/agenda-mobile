@@ -3,6 +3,7 @@ import 'package:agenda_mobile/bloc/login/login_bloc.dart';
 import 'package:agenda_mobile/data/datasources/api_datasources.dart';
 import 'package:agenda_mobile/data/models/request/login_request_model.dart';
 import 'package:agenda_mobile/presentation/pages/dashboard_page.dart';
+import 'package:agenda_mobile/services/NotificationService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -126,6 +127,12 @@ class _LoginPageState extends State<LoginPage> {
                               email: emailController.text,
                               password: passwordController.text,
                             );
+                            final notificationService = NotificationService();
+                            notificationService.showNotification(
+                                id: 1,
+                                body: "This Is Loggin SUccess",
+                                title: 'Flutter Notif',
+                                payload: 'Max Notification');
 
                             context
                                 .read<LoginBloc>()

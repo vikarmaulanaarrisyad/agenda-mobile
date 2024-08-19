@@ -1,11 +1,15 @@
 import 'package:agenda_mobile/bloc/login/login_bloc.dart';
 import 'package:agenda_mobile/data/datasources/api_datasources.dart';
 import 'package:agenda_mobile/presentation/pages/login_page.dart';
+import 'package:agenda_mobile/services/NotificationService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final NotificationService notificationService = NotificationService();
+  await notificationService.initNotification();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
