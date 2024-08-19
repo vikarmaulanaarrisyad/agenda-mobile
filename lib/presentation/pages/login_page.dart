@@ -1,5 +1,8 @@
+import 'package:agenda_mobile/bloc/dashboard/dashboard_bloc.dart';
 import 'package:agenda_mobile/bloc/login/login_bloc.dart';
+import 'package:agenda_mobile/data/datasources/api_datasources.dart';
 import 'package:agenda_mobile/data/models/request/login_request_model.dart';
+import 'package:agenda_mobile/presentation/pages/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -73,6 +76,8 @@ class _LoginPageState extends State<LoginPage> {
                   BlocConsumer<LoginBloc, LoginState>(
                     listener: (context, state) {
                       if (state is LoginLoaded) {
+                        final token = state.response
+                            .token; // Assuming the token is in the response
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content:
@@ -80,7 +85,24 @@ class _LoginPageState extends State<LoginPage> {
                             backgroundColor: Colors.green,
                           ),
                         );
-                        // Navigate to another screen or perform other actions
+
+                        // Navigate to DashboardPage and initialize DashboardBloc with the token
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MultiBlocProvider(
+                              providers: [
+                                BlocProvider(
+                                  create: (context) => DashboardBloc(
+                                    ApiDatasource(),
+                                    token,
+                                  ),
+                                ),
+                              ],
+                              child: const DashboardPage(),
+                            ),
+                          ),
+                        );
                       } else if (state is LoginError) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -111,21 +133,19 @@ class _LoginPageState extends State<LoginPage> {
                           },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
-                            backgroundColor: Colors.deepPurple, // Text color
+                            backgroundColor: Colors.deepPurple,
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12.0),
                             ),
-                            elevation: 5, // Button shadow
+                            elevation: 5,
                             shadowColor: Colors.black.withOpacity(0.3),
                             textStyle: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          child: const Text(
-                            'Login',
-                          ),
+                          child: const Text('Login'),
                         ),
                       );
                     },

@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:agenda_mobile/data/models/request/agenda_request_model.dart';
 import 'package:agenda_mobile/data/models/request/login_request_model.dart';
 import 'package:agenda_mobile/data/models/request/register_model.dart';
+import 'package:agenda_mobile/data/models/response/agenda_response_model.dart';
 import 'package:agenda_mobile/data/models/response/login_response_model.dart';
 import 'package:agenda_mobile/data/models/response/register_response_model.dart';
 import 'package:http/http.dart' as http;
@@ -27,6 +31,22 @@ class ApiDatasource {
       return LoginResponseModel.fromJson(response.body);
     } else {
       throw Exception('Failed to login: ${response.reasonPhrase}');
+    }
+  }
+
+  Future<AgendaResponseModel> fetchAgendas(String token) async {
+    final response = await http.get(
+      Uri.parse('http://192.168.0.102/agenda/public/api/agenda'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return AgendaResponseModel.fromJson(response.body);
+    } else {
+      throw Exception('Failed to fetch agendas: ${response.reasonPhrase}');
     }
   }
 }
