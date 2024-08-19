@@ -1,8 +1,10 @@
+import 'package:agenda_mobile/presentation/pages/detail_agenda_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:agenda_mobile/bloc/dashboard/dashboard_bloc.dart';
 import 'package:agenda_mobile/data/models/request/agenda_request_model.dart';
 import 'package:agenda_mobile/data/models/response/agenda_response_model.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -72,6 +74,15 @@ class _DashboardPageState extends State<DashboardPage> {
                       isThreeLine: true,
                       trailing:
                           Icon(Icons.event_note, color: Colors.deepPurple),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DetailAgendaPage(agenda: agenda),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },

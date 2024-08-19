@@ -1,14 +1,16 @@
 import 'package:agenda_mobile/bloc/dashboard/dashboard_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:agenda_mobile/bloc/login/login_bloc.dart';
 import 'package:agenda_mobile/data/datasources/api_datasources.dart';
 import 'package:agenda_mobile/data/models/request/login_request_model.dart';
 import 'package:agenda_mobile/presentation/pages/dashboard_page.dart';
-import 'package:agenda_mobile/services/NotificationService.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({
+    super.key,
+  });
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -77,8 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                   BlocConsumer<LoginBloc, LoginState>(
                     listener: (context, state) {
                       if (state is LoginLoaded) {
-                        final token = state.response
-                            .token; // Assuming the token is in the response
+                        final token = state.response.token;
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content:
@@ -127,12 +128,6 @@ class _LoginPageState extends State<LoginPage> {
                               email: emailController.text,
                               password: passwordController.text,
                             );
-                            final notificationService = NotificationService();
-                            notificationService.showNotification(
-                                id: 1,
-                                body: "This Is Loggin SUccess",
-                                title: 'Flutter Notif',
-                                payload: 'Max Notification');
 
                             context
                                 .read<LoginBloc>()
