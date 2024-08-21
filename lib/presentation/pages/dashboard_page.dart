@@ -68,7 +68,7 @@ class _DashboardPageState extends State<DashboardPage> {
             await flutterLocalNotificationsPlugin.show(
               agenda.id,
               agenda.namaKegiatan,
-              'Tempat: ${agenda.tempat}',
+              'Tempat, Tanggal dan Waktu : ${agenda.tempat} ${agenda.tanggal} ${agenda.waktuMulai}',
               NotificationDetails(
                 android: AndroidNotificationDetails(
                   'agenda_notification_channel_id',
