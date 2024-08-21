@@ -4,7 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:agenda_mobile/bloc/dashboard/dashboard_bloc.dart';
 import 'package:agenda_mobile/data/models/request/agenda_request_model.dart';
-import 'package:agenda_mobile/data/models/response/agenda_response_model.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
+import 'dart:async';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -14,10 +18,81 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  Timer? _notificationCheckTimer;
+
   @override
   void initState() {
     super.initState();
     context.read<DashboardBloc>().add(FetchAgendaEvent());
+
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('logo');
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    tz.initializeTimeZones();
+    tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+
+    // Mulai timer untuk cek agenda setiap detik
+    _notificationCheckTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      // _checkAndScheduleNotifications();
+      _checkAndScheduleNotifications5();
+    });
+  }
+
+  Future<void> _checkAndScheduleNotifications5() async {
+    final state = context.read<DashboardBloc>().state;
+
+    try {
+      if (state is DashboardLoaded) {
+        final tz.TZDateTime now =
+            tz.TZDateTime.now(tz.getLocation('Asia/Jakarta'));
+        print(now);
+
+        for (final agenda in state.agendas) {
+          final DateTime scheduledDateTime =
+              DateTime.parse('${agenda.tanggal} ${agenda.waktuMulai}');
+          final tz.TZDateTime scheduledTZDateTime = tz.TZDateTime.from(
+              scheduledDateTime, tz.getLocation('Asia/Jakarta'));
+
+          // Jika waktu agenda sama dengan waktu sekarang
+          if (scheduledTZDateTime.year == now.year &&
+              scheduledTZDateTime.month == now.month &&
+              scheduledTZDateTime.day == now.day &&
+              scheduledTZDateTime.hour == now.hour &&
+              scheduledTZDateTime.minute == now.minute &&
+              scheduledTZDateTime.second == now.second) {
+            await flutterLocalNotificationsPlugin.show(
+              agenda.id,
+              agenda.namaKegiatan,
+              'Tempat: ${agenda.tempat}',
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                  'agenda_notification_channel_id',
+                  'Agenda Notifications',
+                  channelDescription: 'Channel for agenda notifications',
+                  importance: Importance.max,
+                  priority: Priority.high,
+                ),
+              ),
+              payload: 'Agenda ID: ${agenda.id}',
+            );
+          }
+        }
+      }
+    } catch (e) {
+      print('Error checking and scheduling notifications: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    // Pastikan untuk membatalkan timer ketika widget dihancurkan
+    _notificationCheckTimer?.cancel();
+    super.dispose();
   }
 
   @override

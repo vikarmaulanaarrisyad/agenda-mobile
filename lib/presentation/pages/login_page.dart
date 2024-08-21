@@ -6,6 +6,8 @@ import 'package:agenda_mobile/bloc/login/login_bloc.dart';
 import 'package:agenda_mobile/data/datasources/api_datasources.dart';
 import 'package:agenda_mobile/data/models/request/login_request_model.dart';
 import 'package:agenda_mobile/presentation/pages/dashboard_page.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({
@@ -19,6 +21,65 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Inisialisasi plugin notifikasi lokal
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('logo');
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    // Inisialisasi data zona waktu
+    tz.initializeTimeZones();
+
+    // Jadwalkan notifikasi setiap hari pada pukul 19.00
+    scheduleDailyNotification();
+  }
+
+  Future<void> scheduleDailyNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'daily_notification_channel_id',
+      'Daily Notifications',
+      channelDescription: 'Channel for daily notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    // Atur waktu untuk pukul 19.00 dalam zona waktu lokal
+    final tz.TZDateTime scheduledDate = _nextInstanceOfTime(13, 15);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      0,
+      'Scheduled Notification',
+      'This is your daily notification at 19:00',
+      scheduledDate,
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+      matchDateTimeComponents: DateTimeComponents.time,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.wallClockTime,
+    );
+  }
+
+  tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: CircularProgressIndicator(),
                         );
                       }
-                      return Container(
+                      return SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
