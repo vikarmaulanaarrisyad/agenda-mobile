@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (context) => LoginBloc(ApiDatasource()),
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Agenda Mobile Apps',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
