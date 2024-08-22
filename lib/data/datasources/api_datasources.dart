@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:agenda_mobile/data/models/request/agenda_request_model.dart';
 import 'package:agenda_mobile/data/models/request/login_request_model.dart';
 import 'package:agenda_mobile/data/models/request/register_model.dart';
 import 'package:agenda_mobile/data/models/response/agenda_response_model.dart';
@@ -22,7 +19,8 @@ class ApiDatasource {
 
   Future<LoginResponseModel> login(LoginRequestModel LoginRequestModel) async {
     final response = await http.post(
-      Uri.parse('http://192.168.0.102/agenda/public/api/login'),
+      // Uri.parse('http://192.168.0.102/agenda/public/api/login'),
+      Uri.parse('http://192.168.1.10/agenda/public/api/login'),
       // headers: {'Content-Type': 'application/json'},
       body: LoginRequestModel.toMap(),
     );
@@ -36,7 +34,8 @@ class ApiDatasource {
 
   Future<AgendaResponseModel> fetchAgendas(String token) async {
     final response = await http.get(
-      Uri.parse('http://192.168.0.102/agenda/public/api/agenda'),
+      // Uri.parse('http://192.168.0.102/agenda/public/api/agenda'),
+      Uri.parse('http://192.168.1.10/agenda/public/api/agenda'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

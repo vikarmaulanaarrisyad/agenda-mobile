@@ -1,5 +1,6 @@
 import 'package:agenda_mobile/data/models/request/agenda_request_model.dart';
 import 'package:flutter/material.dart';
+// ignore: unused_import
 import 'package:agenda_mobile/data/models/response/agenda_response_model.dart';
 
 class DetailAgendaPage extends StatelessWidget {

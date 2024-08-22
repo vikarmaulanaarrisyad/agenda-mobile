@@ -14,7 +14,7 @@ final class LoginLoading extends LoginState {}
 class LoginLoaded extends LoginState {
   final LoginResponseModel response;
 
-  LoginLoaded({required this.response});
+  const LoginLoaded({required this.response});
 
   @override
   List<Object> get props => [response];
@@ -23,7 +23,7 @@ class LoginLoaded extends LoginState {
 final class LoginError extends LoginState {
   final String message;
 
-  LoginError({required this.message});
+  const LoginError({required this.message});
 
   @override
   List<Object> get props => [message];
